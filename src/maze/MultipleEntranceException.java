@@ -1,7 +1,7 @@
 package maze;
 
 public class MultipleEntranceException extends InvalidMazeException {
-    public MultipleEntranceException(String messege) {
-        super(messege);
+    public MultipleEntranceException(String message) {
+        super(message);
     }
 }
