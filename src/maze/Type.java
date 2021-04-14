@@ -1,5 +1,5 @@
 package maze;
 
-enum Type {
+public enum Type {
     CORRIDOR, ENTRANCE, EXIT, WALL;
 }
