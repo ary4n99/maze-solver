@@ -1,5 +1,8 @@
 package maze;
 
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Maze {
@@ -13,10 +16,65 @@ public class Maze {
     private Maze() {
     }
 
-    public static Maze fromTxt(String stringIn) {
+    public static Maze fromTxt(String filePath) {
+        Maze maze = new Maze();
+        try (FileReader file = new FileReader(filePath)) {
+            int fileInt = file.read();
+            String allowedChars = "ex#.";
+            maze.tiles.add(new ArrayList<Tile>());
+            while (fileInt != -1) {
+                char fileChar = (char) fileInt;
+                if (fileChar == '\n') {
+                    maze.tiles.add(new ArrayList<Tile>());
+                } else if (allowedChars.contains(String.valueOf(fileChar))) {
+                    Tile newTile = Tile.fromChar(fileChar);
+                    maze.tiles.get(maze.tiles.size() - 1).add(newTile);
+                    if (fileChar == 'e') {
+                        try {
+                            maze.setEntrance(newTile);
+                        } catch (MultipleEntranceException e) {
+                            throw new MultipleEntranceException("Multiple entrances");
+                        }
+                    } else if (fileChar == 'x') {
+                        try {
+                            maze.setExit(newTile);
+                        } catch (MultipleExitException e) {
+                            throw new MultipleExitException("Multiple exits");
+                        }
+                    }
+                } else {
+                    throw new InvalidMazeException("Invalid character");
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        int rowSize = maze.tiles.get(0).size();
+        for (List<Tile> row : maze.tiles) {
+            if (rowSize != row.size())
+                throw new RaggedMazeException("Row sizes don't match ");
+        }
+        if (maze.getEntrance() == null) {
+            throw new NoEntranceException("No entrance found");
+        } else if (maze.getExit() == null) {
+            throw new NoExitException("No exit found");
+        }
+        return maze;
     }
 
-    public Tile getAdjacentTile(Tile tileIn, Direction directionIn) {
+    public Tile getAdjacentTile(Tile tileIn, Direction direction) {
+        int oldTileX = getTileLocation(tileIn).getX();
+        int oldTileY = getTileLocation(tileIn).getY();
+        int newTileX = direction == Direction.WEST ? oldTileX - 1
+                : direction == Direction.EAST ? oldTileX + 1 : oldTileX;
+        int newTileY = direction == Direction.SOUTH ? oldTileY - 1
+                : direction == Direction.NORTH ? oldTileY + 1 : oldTileY;
+        if (newTileY > tiles.size() - 1 || oldTileX > tiles.get(0).size() - 1 || newTileY < 0 || oldTileX < 0) {
+            return null;
+        } else {
+            return getTileAtLocation(new Coordinate(newTileX, newTileY));
+        }
     }
 
     public Tile getEntrance() {
@@ -28,9 +86,18 @@ public class Maze {
     }
 
     public Tile getTileAtLocation(Coordinate coordinateIn) {
+        return tiles.get(tiles.size() - 1 - coordinateIn.getY()).get(coordinateIn.getX());
     }
 
     public Coordinate getTileLocation(Tile tileIn) {
+        for (int col = 0; col < tiles.size(); col++) {
+            for (int row = 0; row < tiles.get(col).size(); row++) {
+                if (tiles.get(col).get(row).equals(tileIn)) {
+                    return new Coordinate(row, (tiles.size() - 1 - col));
+                }
+            }
+        }
+        return null;
     }
 
     public List<List<Tile>> getTiles() {
@@ -38,12 +105,34 @@ public class Maze {
     }
 
     private void setEntrance(Tile tileIn) {
+        if (getTileLocation(tileIn) == null) {
+            throw new IllegalArgumentException("Invalid entrance");
+        } else if (entrance == null) {
+            entrance = tileIn;
+        } else {
+            throw new MultipleEntranceException("Multiple entrances found");
+        }
     }
 
     private void setExit(Tile tileIn) {
+        if (getTileLocation(tileIn) == null) {
+            throw new IllegalArgumentException("Invalid exit");
+        } else if (exit == null) {
+            exit = tileIn;
+        } else {
+            throw new MultipleEntranceException("Multiple exits found");
+        }
     }
 
     public String toString() {
+        String string = "";
+        for (List<Tile> row : tiles) {
+            for (Tile tile : row) {
+                string += tile.toString();
+            }
+            string += "\n";
+        }
+        return string;
     }
 
 }
