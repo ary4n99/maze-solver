@@ -7,6 +7,32 @@ import java.util.List;
 
 public class Maze {
 
+    public enum Direction {
+        NORTH, SOUTH, EAST, WEST;
+    }
+
+    public class Coordinate {
+
+        private int x;
+
+        private int y;
+
+        public Coordinate(int xIn, int yIn) {
+        }
+
+        public int getX() {
+            return x;
+        }
+
+        public int getY() {
+            return y;
+        }
+
+        public String toString() {
+            return "(" + x + ", " + y + ")";
+        }
+    }
+
     private Tile entrance;
 
     private Tile exit;
@@ -14,6 +40,7 @@ public class Maze {
     private List<List<Tile>> tiles;
 
     private Maze() {
+        tiles = new ArrayList<List<Tile>>();
     }
 
     public static Maze fromTxt(String filePath) {

@@ -2,6 +2,10 @@ package maze;
 
 public class Tile {
 
+    public enum Type {
+        CORRIDOR, ENTRANCE, EXIT, WALL;
+    }
+
     private Type type;
 
     private Tile(Type typeIn) {
