@@ -71,6 +71,7 @@ public class Maze {
                 } else {
                     throw new InvalidMazeException("Invalid character");
                 }
+                fileInt = file.read();
             }
             file.close();
         } catch (IOException e) {
@@ -97,7 +98,7 @@ public class Maze {
                 : direction == Direction.EAST ? oldTileX + 1 : oldTileX;
         int newTileY = direction == Direction.SOUTH ? oldTileY - 1
                 : direction == Direction.NORTH ? oldTileY + 1 : oldTileY;
-        if (newTileY > tiles.size() - 1 || oldTileX > tiles.get(0).size() - 1 || newTileY < 0 || oldTileX < 0) {
+        if (newTileY > tiles.size() - 1 || newTileX > tiles.get(0).size() - 1 || newTileY < 0 || newTileX < 0) {
             return null;
         } else {
             return getTileAtLocation(new Coordinate(newTileX, newTileY));
