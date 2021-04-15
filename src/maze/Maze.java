@@ -13,11 +13,11 @@ public class Maze {
 
     public class Coordinate {
 
-        private int x;
-
-        private int y;
+        private int x, y;
 
         public Coordinate(int xIn, int yIn) {
+            x = xIn;
+            y = yIn;
         }
 
         public int getX() {
@@ -47,13 +47,12 @@ public class Maze {
         Maze maze = new Maze();
         try (FileReader file = new FileReader(filePath)) {
             int fileInt = file.read();
-            String allowedChars = "ex#.";
             maze.tiles.add(new ArrayList<Tile>());
             while (fileInt != -1) {
                 char fileChar = (char) fileInt;
                 if (fileChar == '\n') {
                     maze.tiles.add(new ArrayList<Tile>());
-                } else if (allowedChars.contains(String.valueOf(fileChar))) {
+                } else if (fileChar == 'e' || fileChar == 'x' || fileChar == '#' || fileChar == '.') {
                     Tile newTile = Tile.fromChar(fileChar);
                     maze.tiles.get(maze.tiles.size() - 1).add(newTile);
                     if (fileChar == 'e') {
@@ -73,6 +72,7 @@ public class Maze {
                     throw new InvalidMazeException("Invalid character");
                 }
             }
+            file.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -147,7 +147,7 @@ public class Maze {
         } else if (exit == null) {
             exit = tileIn;
         } else {
-            throw new MultipleEntranceException("Multiple exits found");
+            throw new MultipleExitException("Multiple exits found");
         }
     }
 
