@@ -1,6 +1,6 @@
 package maze;
 
-public class Tile {
+public class Tile implements java.io.Serializable {
 
     public enum Type {
         CORRIDOR, ENTRANCE, EXIT, WALL;
