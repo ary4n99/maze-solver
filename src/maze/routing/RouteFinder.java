@@ -2,10 +2,16 @@ package maze.routing;
 
 import maze.Tile;
 import maze.Maze;
+
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.List;
 import java.util.Stack;
 
-public class RouteFinder {
+public class RouteFinder implements java.io.Serializable {
 
     private Maze maze;
 
@@ -35,13 +41,16 @@ public class RouteFinder {
     }
 
     public static RouteFinder load(String stringIn) {
-        RouteFinder routeFinder;
+        RouteFinder routeFinder = null;
         try (FileInputStream file = new FileInputStream(stringIn);
                 ObjectInputStream stream = new ObjectInputStream(file);) {
-            return (RouteFinder) stream.readObject();
+            routeFinder = (RouteFinder) stream.readObject();
         } catch (IOException e) {
-            throw new IOException("Problem loading file.");
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
         }
+        return routeFinder;
     }
 
     public void save(String stringIn) {
@@ -49,7 +58,7 @@ public class RouteFinder {
                 ObjectOutputStream stream = new ObjectOutputStream(file);) {
             stream.writeObject(this);
         } catch (IOException e) {
-            throw new IOException("Problem saving file.");
+            e.printStackTrace();
         }
     }
 

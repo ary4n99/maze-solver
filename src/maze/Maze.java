@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Maze {
+public class Maze implements java.io.Serializable {
 
     public enum Direction {
         NORTH, SOUTH, EAST, WEST;
