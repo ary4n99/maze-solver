@@ -8,6 +8,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
@@ -24,6 +25,7 @@ public class RouteFinder implements java.io.Serializable {
     public RouteFinder(Maze mazeIn) {
         maze = mazeIn;
         route = new Stack<Tile>();
+        visited = new ArrayList<Tile>();
         finished = false;
     }
 
