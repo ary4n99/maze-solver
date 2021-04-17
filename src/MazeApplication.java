@@ -28,7 +28,7 @@ public class MazeApplication extends Application {
 
     public Maze maze;
     public RouteFinder routeFinder;
-    public GridPane mapGrid;
+    public GridPane mazeGrid;
     public Insets insets = new Insets(20, 20, 20, 20);
 
     public static void main(String[] args) {
@@ -125,7 +125,7 @@ public class MazeApplication extends Application {
     }
 
     public void MazeRouteStep() {
-        mapGrid = new GridPane();
+        mazeGrid = new GridPane();
         int x = 0;
         int y = 0;
         String mazeString = routeFinder.toString();
@@ -145,7 +145,7 @@ public class MazeApplication extends Application {
                         x += 1;
                         Rectangle rectangle = new Rectangle(50, 50);
                         rectangle.setFill(characterColours.get(key));
-                        mapGrid.add(rectangle, x, y);
+                        mazeGrid.add(rectangle, x, y);
                         break;
                     }
                 }
@@ -168,7 +168,7 @@ public class MazeApplication extends Application {
         topHBox.getChildren().addAll(loadMapButton, loadRouteButton, saveRouteButton);
         topHBox.setPadding(insets);
         middleHBox.getChildren().clear();
-        middleHBox.getChildren().add(mapGrid);
+        middleHBox.getChildren().add(mazeGrid);
         middleHBox.setPadding(new Insets(0, 50, 0, 50));
         bottomHBox.getChildren().clear();
         if (!finished) {
