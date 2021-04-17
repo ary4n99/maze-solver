@@ -17,17 +17,19 @@ import javafx.geometry.Insets;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Region;
 
-// ADD FINISHED POPUP
-// ADD WELCOME TEXT AND TOOLBAR FOR LOAD AND SAVE
+// FIX LOADING EMPTY ROUTE
+
 public class MazeApplication extends Application {
 
     public Maze maze;
     public RouteFinder routeFinder;
     public GridPane mapGrid;
-    public Insets insets = new Insets(15, 15, 15, 15);
+    public Insets insets = new Insets(20, 20, 20, 20);
 
     public static void main(String[] args) {
         launch(args);
@@ -36,27 +38,36 @@ public class MazeApplication extends Application {
     public void start(Stage stage) {
         Button loadMapButton = new Button();
         loadMapButton.setText("Load map");
+        loadMapButton.setPrefSize(100, 50);
         Button loadRouteButton = new Button();
         loadRouteButton.setText("Load route");
+        loadRouteButton.setPrefSize(100, 50);
         Button saveRouteButton = new Button();
         saveRouteButton.setText("Save route");
+        saveRouteButton.setPrefSize(100, 50);
         Button stepButton = new Button();
         stepButton.setText("Step");
-        HBox topHBox = new HBox(0);
+        stepButton.setPrefSize(100, 50);
+        Text welcomeText = new Text();
+        welcomeText.setFont(new Font(20));
+        welcomeText.setText("Welcome to the Maze Solver!");
+        HBox topHBox = new HBox();
         topHBox.setAlignment(Pos.CENTER);
         topHBox.setPadding(insets);
-        topHBox.setSpacing(15);
+        topHBox.setSpacing(20);
         topHBox.getChildren().addAll(loadMapButton, loadRouteButton);
-        HBox middleHBox = new HBox(0);
+        HBox middleHBox = new HBox();
         middleHBox.setAlignment(Pos.CENTER);
+        middleHBox.setPadding(new Insets(20, 20, 0, 20));
+        middleHBox.getChildren().add(welcomeText);
         HBox bottomHBox = new HBox();
         bottomHBox.setAlignment(Pos.CENTER);
         FileChooser fileChooserMaze = new FileChooser();
         fileChooserMaze.getExtensionFilters().add(new FileChooser.ExtensionFilter("Text file", "*.txt"));
         FileChooser fileChooserRoute = new FileChooser();
         fileChooserRoute.getExtensionFilters().add(new FileChooser.ExtensionFilter("Route file", "*.route"));
-        VBox root = new VBox(0);
-        root.getChildren().add(topHBox);
+        VBox root = new VBox();
+        root.getChildren().addAll(middleHBox, topHBox);
         loadMapButton.setOnAction(e -> {
             File file = fileChooserMaze.showOpenDialog(stage);
             try {
@@ -130,7 +141,7 @@ public class MazeApplication extends Application {
                 for (Character key : characterColours.keySet()) {
                     if (mazeString.charAt(i) == key) {
                         x += 1;
-                        Rectangle rectangle = new Rectangle(30, 30);
+                        Rectangle rectangle = new Rectangle(50, 50);
                         rectangle.setFill(characterColours.get(key));
                         mapGrid.add(rectangle, x, y);
                         break;
@@ -145,7 +156,6 @@ public class MazeApplication extends Application {
         alert.setTitle("Error");
         alert.setHeaderText("Error has occurred.");
         alert.setContentText(errorMessage);
-        alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
         alert.showAndWait();
     }
 
@@ -157,7 +167,7 @@ public class MazeApplication extends Application {
         topHBox.setPadding(insets);
         middleHBox.getChildren().clear();
         middleHBox.getChildren().add(mapGrid);
-        middleHBox.setPadding(insets);
+        middleHBox.setPadding(new Insets(0, 50, 0, 50));
         bottomHBox.getChildren().clear();
         if (!finished) {
             bottomHBox.getChildren().add(stepButton);
@@ -166,5 +176,12 @@ public class MazeApplication extends Application {
         root.getChildren().clear();
         root.getChildren().addAll(topHBox, middleHBox, bottomHBox);
         stage.sizeToScene();
+        if (finished) {
+            Alert alert = new Alert(AlertType.INFORMATION);
+            alert.setTitle("Message");
+            alert.setHeaderText("The maze has been solved!");
+            alert.setContentText("Click the button below to return to the maze solver.");
+            alert.showAndWait();
+        }
     }
 }
