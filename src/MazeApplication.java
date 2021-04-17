@@ -22,6 +22,7 @@ import javafx.scene.text.Text;
 import javafx.scene.layout.GridPane;
 
 // FIX LOADING EMPTY ROUTE
+// ADD JAVADOCS
 
 public class MazeApplication extends Application {
 
@@ -85,6 +86,8 @@ public class MazeApplication extends Application {
                 routeFinder = RouteFinder.load(fileChooserRoute.showOpenDialog(stage).getPath());
                 maze = routeFinder.getMaze();
             } catch (NoRouteFoundException ex) {
+                showErrorMessage(ex.toString());
+            } catch (NullPointerException ex) {
                 showErrorMessage(ex.toString());
             }
             boolean finished = routeFinder.isFinished();
