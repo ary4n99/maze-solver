@@ -24,7 +24,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.layout.GridPane;
 
-// FIX LOADING EMPTY ROUTE
+// ADD VBOX WITH IMAGE ON HOME SCREEN MIDDLEVBOX (VISUALIZATION)
 // ADD JAVADOCS
 
 public class MazeApplication extends Application {
@@ -62,7 +62,7 @@ public class MazeApplication extends Application {
         VBox middleVBox = new VBox();
         middleVBox.setAlignment(Pos.CENTER);
         middleVBox.setPadding(new Insets(20, 0, 20, 20));
-        middleVBox.getChildren().add(welcomeText);
+        middleVBox.getChildren().add(welcomeText); //ADD IMAGE
         VBox rightVBox = new VBox();
         rightVBox.setAlignment(Pos.CENTER);
         FileChooser fileChooserMaze = new FileChooser();
