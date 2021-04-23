@@ -120,19 +120,14 @@ public class MazeApplication extends Application {
                     showErrorMessage(ex.toString());
                 }
             }
-            renderScreen(stage, root, leftVBox, middleVBox, rightVBox, loadMapButton, loadRouteButton, saveRouteButton,
-                    stepButton, false);
         });
         stepButton.setOnAction(e -> {
-            boolean finished;
             try {
-                finished = routeFinder.step();
+                renderScreen(stage, root, leftVBox, middleVBox, rightVBox, loadMapButton, loadRouteButton,
+                        saveRouteButton, stepButton, routeFinder.step());
             } catch (NoRouteFoundException ex) {
-                finished = true;
                 showErrorMessage(ex.toString());
             }
-            renderScreen(stage, root, leftVBox, middleVBox, rightVBox, loadMapButton, loadRouteButton, saveRouteButton,
-                    stepButton, finished);
         });
         stage.setScene(new Scene(root));
         stage.sizeToScene();
