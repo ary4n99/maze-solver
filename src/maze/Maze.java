@@ -43,7 +43,7 @@ public class Maze implements java.io.Serializable {
         tiles = new ArrayList<List<Tile>>();
     }
 
-    public static Maze fromTxt(String filePath) {
+    public static Maze fromTxt(String filePath) throws IOException, NullPointerException, InvalidMazeException {
         Maze maze = new Maze();
         try (FileReader file = new FileReader(filePath)) {
             int fileInt = file.read();
@@ -59,34 +59,36 @@ public class Maze implements java.io.Serializable {
                         try {
                             maze.setEntrance(newTile);
                         } catch (MultipleEntranceException e) {
-                            throw new MultipleEntranceException("Multiple entrances");
+                            throw new MultipleEntranceException("Multiple entrances in the maze.");
                         }
                     } else if (fileChar == 'x') {
                         try {
                             maze.setExit(newTile);
                         } catch (MultipleExitException e) {
-                            throw new MultipleExitException("Multiple exits");
+                            throw new MultipleExitException("Multiple exits in the maze.");
                         }
                     }
                 } else {
-                    throw new InvalidMazeException("Invalid character");
+                    throw new InvalidMazeException("Invalid character in the maze.");
                 }
                 fileInt = file.read();
             }
             file.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new IOException();
+        } catch (NullPointerException e) {
+            throw new NullPointerException();
         }
 
         int rowSize = maze.tiles.get(0).size();
         for (List<Tile> row : maze.tiles) {
             if (rowSize != row.size())
-                throw new RaggedMazeException("Row sizes don't match ");
+                throw new RaggedMazeException("Row sizes in the maze don't match.");
         }
         if (maze.getEntrance() == null) {
-            throw new NoEntranceException("No entrance found");
+            throw new NoEntranceException("No entrance found in the maze.");
         } else if (maze.getExit() == null) {
-            throw new NoExitException("No exit found");
+            throw new NoExitException("No exit found in the maze.");
         }
         return maze;
     }
@@ -132,23 +134,23 @@ public class Maze implements java.io.Serializable {
         return tiles;
     }
 
-    private void setEntrance(Tile tileIn) {
+    private void setEntrance(Tile tileIn) throws IllegalArgumentException, InvalidMazeException {
         if (getTileLocation(tileIn) == null) {
-            throw new IllegalArgumentException("Invalid entrance");
+            throw new IllegalArgumentException("Invalid entrance in the maze.");
         } else if (entrance == null) {
             entrance = tileIn;
         } else {
-            throw new MultipleEntranceException("Multiple entrances found");
+            throw new MultipleEntranceException("Multiple entrances found in the maze.");
         }
     }
 
-    private void setExit(Tile tileIn) {
+    private void setExit(Tile tileIn) throws IllegalArgumentException, InvalidMazeException {
         if (getTileLocation(tileIn) == null) {
-            throw new IllegalArgumentException("Invalid exit");
+            throw new IllegalArgumentException("Invalid exit in the maze.");
         } else if (exit == null) {
             exit = tileIn;
         } else {
-            throw new MultipleExitException("Multiple exits found");
+            throw new MultipleExitException("Multiple exits found in the maze.");
         }
     }
 

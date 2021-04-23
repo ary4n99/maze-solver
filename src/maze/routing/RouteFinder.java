@@ -42,29 +42,30 @@ public class RouteFinder implements java.io.Serializable {
 
     }
 
-    public static RouteFinder load(String stringIn) {
+    public static RouteFinder load(String stringIn) throws IOException, ClassNotFoundException {
         RouteFinder routeFinder = null;
-        try (FileInputStream file = new FileInputStream(stringIn);
-                ObjectInputStream stream = new ObjectInputStream(file);) {
+        try {
+            ObjectInputStream stream = new ObjectInputStream(new FileInputStream(stringIn));
             routeFinder = (RouteFinder) stream.readObject();
+            stream.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new IOException();
         } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+            throw new ClassNotFoundException();
         }
         return routeFinder;
     }
 
-    public void save(String stringIn) {
+    public void save(String stringIn) throws IOException {
         try (FileOutputStream file = new FileOutputStream(stringIn);
                 ObjectOutputStream stream = new ObjectOutputStream(file);) {
             stream.writeObject(this);
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new IOException();
         }
     }
 
-    public boolean step() {
+    public boolean step() throws NoRouteFoundException {
         if (!finished) {
             if (!route.contains(maze.getEntrance()) && !visited.contains(maze.getEntrance())) {
                 route.push(maze.getEntrance());

@@ -2,7 +2,9 @@ import maze.Maze;
 import maze.routing.RouteFinder;
 import maze.InvalidMazeException;
 import maze.routing.NoRouteFoundException;
+
 import java.io.File;
+import java.io.IOException;
 import java.util.Hashtable;
 import javafx.application.Application;
 import javafx.geometry.Pos;
@@ -10,6 +12,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.FileChooser;
@@ -51,60 +54,73 @@ public class MazeApplication extends Application {
         Text welcomeText = new Text();
         welcomeText.setFont(new Font(20));
         welcomeText.setText("Welcome to the Maze Solver!");
-        HBox topHBox = new HBox();
-        topHBox.setAlignment(Pos.CENTER);
-        topHBox.setPadding(insets);
-        topHBox.setSpacing(20);
-        topHBox.getChildren().addAll(loadMapButton, loadRouteButton);
-        HBox middleHBox = new HBox();
-        middleHBox.setAlignment(Pos.CENTER);
-        middleHBox.setPadding(new Insets(20, 20, 0, 20));
-        middleHBox.getChildren().add(welcomeText);
-        HBox bottomHBox = new HBox();
-        bottomHBox.setAlignment(Pos.CENTER);
+        VBox leftVBox = new VBox();
+        leftVBox.setAlignment(Pos.CENTER);
+        leftVBox.setPadding(insets);
+        leftVBox.setSpacing(20);
+        leftVBox.getChildren().addAll(loadMapButton, loadRouteButton);
+        VBox middleVBox = new VBox();
+        middleVBox.setAlignment(Pos.CENTER);
+        middleVBox.setPadding(new Insets(20, 0, 20, 20));
+        middleVBox.getChildren().add(welcomeText);
+        VBox rightVBox = new VBox();
+        rightVBox.setAlignment(Pos.CENTER);
         FileChooser fileChooserMaze = new FileChooser();
         fileChooserMaze.getExtensionFilters().add(new FileChooser.ExtensionFilter("Text file", "*.txt"));
         FileChooser fileChooserRoute = new FileChooser();
         fileChooserRoute.getExtensionFilters().add(new FileChooser.ExtensionFilter("Route file", "*.route"));
-        VBox root = new VBox();
-        root.getChildren().addAll(middleHBox, topHBox);
+        HBox root = new HBox();
+        root.getChildren().addAll(middleVBox, leftVBox);
         loadMapButton.setOnAction(e -> {
             File file = fileChooserMaze.showOpenDialog(stage);
             try {
                 maze = Maze.fromTxt(file.getPath());
                 routeFinder = new RouteFinder(maze);
+                renderScreen(stage, root, leftVBox, middleVBox, rightVBox, loadMapButton, loadRouteButton,
+                        saveRouteButton, stepButton, false);
+            } catch (IOException ex) {
+                showErrorMessage(ex.toString());
             } catch (InvalidMazeException ex) {
+                System.out.println(ex.toString());
                 showErrorMessage(ex.toString());
-            } catch (IllegalArgumentException ex) {
-                showErrorMessage(ex.toString());
+            } catch (NullPointerException ex) {
             }
-            renderScreen(stage, root, topHBox, middleHBox, bottomHBox, loadMapButton, loadRouteButton, saveRouteButton,
-                    stepButton, false);
+
         });
         loadRouteButton.setOnAction(e -> {
             try {
                 routeFinder = RouteFinder.load(fileChooserRoute.showOpenDialog(stage).getPath());
                 maze = routeFinder.getMaze();
+                renderScreen(stage, root, leftVBox, middleVBox, rightVBox, loadMapButton, loadRouteButton,
+                        saveRouteButton, stepButton, routeFinder.isFinished());
+            } catch (IOException ex) {
+                System.out.println(ex.toString());
+                showErrorMessage(ex.toString());
+            } catch (ClassNotFoundException ex) {
+                showErrorMessage(ex.toString());
             } catch (NoRouteFoundException ex) {
                 showErrorMessage(ex.toString());
             } catch (NullPointerException ex) {
-                showErrorMessage(ex.toString());
             }
-            boolean finished = routeFinder.isFinished();
-            renderScreen(stage, root, topHBox, middleHBox, bottomHBox, loadMapButton, loadRouteButton, saveRouteButton,
-                    stepButton, finished);
+
         });
         saveRouteButton.setOnAction(e -> {
             FileChooser fileSave = new FileChooser();
             fileSave.setTitle("Save route");
             File file = fileSave.showSaveDialog(stage);
             if (file != null) {
-                if (!file.getName().endsWith(".route")) {
+                if (!file.getName().endsWith(".route")) { // make case insensitive
                     file = new File(file.getPath() + ".route");
                 }
-                routeFinder.save(file.getPath());
+                try {
+                    routeFinder.save(file.getPath());
+                } catch (IOException ex) {
+                    showErrorMessage(ex.toString());
+                } catch (NullPointerException ex) {
+                    showErrorMessage(ex.toString());
+                }
             }
-            renderScreen(stage, root, topHBox, middleHBox, bottomHBox, loadMapButton, loadRouteButton, saveRouteButton,
+            renderScreen(stage, root, leftVBox, middleVBox, rightVBox, loadMapButton, loadRouteButton, saveRouteButton,
                     stepButton, false);
         });
         stepButton.setOnAction(e -> {
@@ -115,12 +131,12 @@ public class MazeApplication extends Application {
                 finished = true;
                 showErrorMessage(ex.toString());
             }
-            renderScreen(stage, root, topHBox, middleHBox, bottomHBox, loadMapButton, loadRouteButton, saveRouteButton,
+            renderScreen(stage, root, leftVBox, middleVBox, rightVBox, loadMapButton, loadRouteButton, saveRouteButton,
                     stepButton, finished);
         });
         stage.setScene(new Scene(root));
         stage.sizeToScene();
-        stage.setTitle("Maze");
+        stage.setTitle("Maze Solver - Aryan Agrawal");
         stage.show();
     }
 
@@ -156,27 +172,29 @@ public class MazeApplication extends Application {
     public void showErrorMessage(String errorMessage) {
         Alert alert = new Alert(AlertType.ERROR);
         alert.setTitle("Error");
-        alert.setHeaderText("Error has occurred.");
+        alert.setHeaderText("An error has occurred.");
         alert.setContentText(errorMessage);
+        alert.setResizable(true);
+        alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
         alert.showAndWait();
     }
 
-    public void renderScreen(Stage stage, VBox root, HBox topHBox, HBox middleHBox, HBox bottomHBox,
+    public void renderScreen(Stage stage, HBox root, VBox leftVBox, VBox middleVBox, VBox rightVBox,
             Button loadMapButton, Button loadRouteButton, Button saveRouteButton, Button stepButton, boolean finished) {
         MazeRouteStep();
-        topHBox.getChildren().clear();
-        topHBox.getChildren().addAll(loadMapButton, loadRouteButton, saveRouteButton);
-        topHBox.setPadding(insets);
-        middleHBox.getChildren().clear();
-        middleHBox.getChildren().add(mazeGrid);
-        middleHBox.setPadding(new Insets(0, 50, 0, 50));
-        bottomHBox.getChildren().clear();
+        leftVBox.getChildren().clear();
+        leftVBox.getChildren().addAll(loadMapButton, loadRouteButton, saveRouteButton);
+        leftVBox.setPadding(insets);
+        middleVBox.getChildren().clear();
+        middleVBox.getChildren().add(mazeGrid);
+        middleVBox.setPadding(new Insets(50, 20, 50, 20));
+        rightVBox.getChildren().clear();
         if (!finished) {
-            bottomHBox.getChildren().add(stepButton);
-            bottomHBox.setPadding(insets);
+            rightVBox.getChildren().add(stepButton);
+            rightVBox.setPadding(insets);
         }
         root.getChildren().clear();
-        root.getChildren().addAll(topHBox, middleHBox, bottomHBox);
+        root.getChildren().addAll(leftVBox, middleVBox, rightVBox);
         stage.sizeToScene();
         if (finished) {
             Alert alert = new Alert(AlertType.INFORMATION);
