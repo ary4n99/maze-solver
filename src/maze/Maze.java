@@ -75,9 +75,9 @@ public class Maze implements java.io.Serializable {
             }
             file.close();
         } catch (IOException e) {
-            throw new IOException();
+            throw new IOException("Error reading maze file.");
         } catch (NullPointerException e) {
-            throw new NullPointerException();
+            throw new NullPointerException("Error reading maze file.");
         }
 
         int rowSize = maze.tiles.get(0).size();

@@ -49,9 +49,9 @@ public class RouteFinder implements java.io.Serializable {
             routeFinder = (RouteFinder) stream.readObject();
             stream.close();
         } catch (IOException e) {
-            throw new IOException();
+            throw new IOException("Error reading route file.");
         } catch (ClassNotFoundException e) {
-            throw new ClassNotFoundException();
+            throw new ClassNotFoundException("Error reading route file.");
         }
         return routeFinder;
     }
@@ -61,7 +61,7 @@ public class RouteFinder implements java.io.Serializable {
                 ObjectOutputStream stream = new ObjectOutputStream(file);) {
             stream.writeObject(this);
         } catch (IOException e) {
-            throw new IOException();
+            throw new IOException("Error saving route file.");
         }
     }
 

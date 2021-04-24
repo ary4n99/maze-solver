@@ -1,11 +1,8 @@
-import maze.Maze;
-import maze.routing.RouteFinder;
-import maze.InvalidMazeException;
-import maze.routing.NoRouteFoundException;
-
+import maze.*;
+import maze.routing.*;
+import maze.visualization.*;
 import java.io.File;
 import java.io.IOException;
-import java.util.Hashtable;
 import javafx.application.Application;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -13,25 +10,19 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
-import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.FileChooser;
 import javafx.geometry.Insets;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.layout.GridPane;
-
-// ADD VBOX WITH IMAGE ON HOME SCREEN MIDDLEVBOX (VISUALIZATION)
-// ADD JAVADOCS
 
 public class MazeApplication extends Application {
 
     public Maze maze;
     public RouteFinder routeFinder;
-    public GridPane mazeGrid;
     public Insets insets = new Insets(20, 20, 20, 20);
 
     public static void main(String[] args) {
@@ -62,7 +53,7 @@ public class MazeApplication extends Application {
         VBox middleVBox = new VBox();
         middleVBox.setAlignment(Pos.CENTER);
         middleVBox.setPadding(new Insets(20, 0, 20, 20));
-        middleVBox.getChildren().add(welcomeText); //ADD IMAGE
+        middleVBox.getChildren().add(welcomeText);
         VBox rightVBox = new VBox();
         rightVBox.setAlignment(Pos.CENTER);
         FileChooser fileChooserMaze = new FileChooser();
@@ -79,10 +70,9 @@ public class MazeApplication extends Application {
                 renderScreen(stage, root, leftVBox, middleVBox, rightVBox, loadMapButton, loadRouteButton,
                         saveRouteButton, stepButton, false);
             } catch (IOException ex) {
-                showErrorMessage(ex.toString());
+                showErrorMessage(ex.getMessage());
             } catch (InvalidMazeException ex) {
-                System.out.println(ex.toString());
-                showErrorMessage(ex.toString());
+                showErrorMessage(ex.getMessage());
             } catch (NullPointerException ex) {
             }
 
@@ -94,12 +84,11 @@ public class MazeApplication extends Application {
                 renderScreen(stage, root, leftVBox, middleVBox, rightVBox, loadMapButton, loadRouteButton,
                         saveRouteButton, stepButton, routeFinder.isFinished());
             } catch (IOException ex) {
-                System.out.println(ex.toString());
-                showErrorMessage(ex.toString());
+                showErrorMessage(ex.getMessage());
             } catch (ClassNotFoundException ex) {
-                showErrorMessage(ex.toString());
+                showErrorMessage(ex.getMessage());
             } catch (NoRouteFoundException ex) {
-                showErrorMessage(ex.toString());
+                showErrorMessage(ex.getMessage());
             } catch (NullPointerException ex) {
             }
 
@@ -115,9 +104,9 @@ public class MazeApplication extends Application {
                 try {
                     routeFinder.save(file.getPath());
                 } catch (IOException ex) {
-                    showErrorMessage(ex.toString());
+                    showErrorMessage(ex.getMessage());
                 } catch (NullPointerException ex) {
-                    showErrorMessage(ex.toString());
+                    showErrorMessage(ex.getMessage());
                 }
             }
         });
@@ -126,42 +115,13 @@ public class MazeApplication extends Application {
                 renderScreen(stage, root, leftVBox, middleVBox, rightVBox, loadMapButton, loadRouteButton,
                         saveRouteButton, stepButton, routeFinder.step());
             } catch (NoRouteFoundException ex) {
-                showErrorMessage(ex.toString());
+                showErrorMessage(ex.getMessage());
             }
         });
         stage.setScene(new Scene(root));
         stage.sizeToScene();
         stage.setTitle("Maze Solver - Aryan Agrawal");
         stage.show();
-    }
-
-    public void MazeRouteStep() {
-        mazeGrid = new GridPane();
-        int x = 0;
-        int y = 0;
-        String mazeString = routeFinder.toString();
-        Hashtable<Character, Color> characterColours = new Hashtable<Character, Color>();
-        characterColours.put('#', Color.BLACK);
-        characterColours.put('*', Color.PINK);
-        characterColours.put('e', Color.GREEN);
-        characterColours.put('x', Color.RED);
-        characterColours.put('.', Color.GRAY);
-        for (int i = 0; i < mazeString.length(); i++) {
-            if (mazeString.charAt(i) == '\n') {
-                x = 0;
-                y += 1;
-            } else {
-                for (Character key : characterColours.keySet()) {
-                    if (mazeString.charAt(i) == key) {
-                        x += 1;
-                        Rectangle rectangle = new Rectangle(50, 50);
-                        rectangle.setFill(characterColours.get(key));
-                        mazeGrid.add(rectangle, x, y);
-                        break;
-                    }
-                }
-            }
-        }
     }
 
     public void showErrorMessage(String errorMessage) {
@@ -176,7 +136,7 @@ public class MazeApplication extends Application {
 
     public void renderScreen(Stage stage, HBox root, VBox leftVBox, VBox middleVBox, VBox rightVBox,
             Button loadMapButton, Button loadRouteButton, Button saveRouteButton, Button stepButton, boolean finished) {
-        MazeRouteStep();
+        GridPane mazeGrid = MazeRender.Render(routeFinder.toString());
         leftVBox.getChildren().clear();
         leftVBox.getChildren().addAll(loadMapButton, loadRouteButton, saveRouteButton);
         leftVBox.setPadding(insets);
