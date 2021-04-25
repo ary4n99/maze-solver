@@ -3,7 +3,9 @@ package maze.routing;
 import maze.Tile;
 import maze.Maze;
 
+import java.io.EOFException;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -42,16 +44,21 @@ public class RouteFinder implements java.io.Serializable {
 
     }
 
-    public static RouteFinder load(String stringIn) throws IOException, ClassNotFoundException {
+    public static RouteFinder load(String stringIn)
+            throws IOException, ClassNotFoundException, EOFException, FileNotFoundException {
         RouteFinder routeFinder = null;
         try {
             ObjectInputStream stream = new ObjectInputStream(new FileInputStream(stringIn));
             routeFinder = (RouteFinder) stream.readObject();
             stream.close();
-        } catch (IOException e) {
-            throw new IOException("Error reading route file.");
         } catch (ClassNotFoundException e) {
             throw new ClassNotFoundException("Error reading route file.");
+        } catch (EOFException e) {
+            throw new EOFException("Route file is empty.");
+        } catch (FileNotFoundException e) {
+            throw new FileNotFoundException("Route file not found.");
+        } catch (IOException e) {
+            throw new IOException("Error reading route file.");
         }
         return routeFinder;
     }
