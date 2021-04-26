@@ -81,7 +81,6 @@ public class RouteFinder implements java.io.Serializable {
      */
     public boolean isFinished() {
         return finished;
-
     }
 
     /**
@@ -91,25 +90,10 @@ public class RouteFinder implements java.io.Serializable {
      * @return RouteFinder
      * @throws IOException
      * @throws ClassNotFoundException
-     * @throws EOFException
-     * @throws FileNotFoundException
      */
-    public static RouteFinder load(String stringIn)
-            throws IOException, ClassNotFoundException, EOFException, FileNotFoundException {
-        RouteFinder routeFinder = null;
-        try {
-            ObjectInputStream stream = new ObjectInputStream(new FileInputStream(stringIn));
-            routeFinder = (RouteFinder) stream.readObject();
-            stream.close();
-        } catch (ClassNotFoundException e) {
-            throw new ClassNotFoundException("Error reading route file.");
-        } catch (EOFException e) {
-            throw new EOFException("Route file is empty.");
-        } catch (FileNotFoundException e) {
-            throw new FileNotFoundException("Route file not found.");
-        } catch (IOException e) {
-            throw new IOException("Error reading route file.");
-        }
+    public static RouteFinder load(String stringIn) throws IOException, ClassNotFoundException {
+        ObjectInputStream stream = new ObjectInputStream(new FileInputStream(stringIn));
+        RouteFinder routeFinder = (RouteFinder) stream.readObject();
         return routeFinder;
     }
 
@@ -120,12 +104,8 @@ public class RouteFinder implements java.io.Serializable {
      * @throws IOException
      */
     public void save(String stringIn) throws IOException {
-        try (FileOutputStream file = new FileOutputStream(stringIn);
-                ObjectOutputStream stream = new ObjectOutputStream(file);) {
-            stream.writeObject(this);
-        } catch (IOException e) {
-            throw new IOException("Error saving route file.");
-        }
+        ObjectOutputStream stream = new ObjectOutputStream(new FileOutputStream(stringIn));
+        stream.writeObject(this);
     }
 
     /**
@@ -139,20 +119,18 @@ public class RouteFinder implements java.io.Serializable {
             if (!route.contains(maze.getEntrance()) && !visited.contains(maze.getEntrance())) {
                 route.push(maze.getEntrance());
                 visited.add(maze.getEntrance());
-            } else {
-                if (route.size() > 0) {
-                    for (Maze.Direction direction : Maze.Direction.values()) {
-                        Tile tile = maze.getAdjacentTile(route.peek(), direction);
-                        if (tile != null && tile.isNavigable() && !visited.contains(tile)) {
-                            visited.add(tile);
-                            route.push(tile);
-                            return finished = tile.toString().equals("x");
-                        }
+            } else if (route.size() > 0) {
+                for (Maze.Direction direction : Maze.Direction.values()) {
+                    Tile tile = maze.getAdjacentTile(route.peek(), direction);
+                    if (tile != null && tile.isNavigable() && !visited.contains(tile)) {
+                        visited.add(tile);
+                        route.push(tile);
+                        return finished = tile.toString().equals("x");
                     }
-                    route.pop();
-                } else {
-                    throw new NoRouteFoundException("No route found.");
                 }
+                route.pop();
+            } else {
+                throw new NoRouteFoundException("No route found.");
             }
         } else if (!visited.contains(maze.getExit())) {
             visited.add(maze.getExit());

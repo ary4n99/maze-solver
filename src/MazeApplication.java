@@ -112,7 +112,7 @@ public class MazeApplication extends Application {
                 renderScreen(stage, root, leftVBox, middleVBox, rightVBox, loadMapButton, loadRouteButton,
                         saveRouteButton, stepButton, routeFinder.isFinished());
             } catch (IOException ex) {
-                showErrorMessage(ex.getMessage());
+                showErrorMessage("Error loading route file.");
             } catch (ClassNotFoundException ex) {
                 showErrorMessage(ex.getMessage());
             } catch (NoRouteFoundException ex) {
@@ -132,9 +132,8 @@ public class MazeApplication extends Application {
                 try {
                     routeFinder.save(file.getPath());
                 } catch (IOException ex) {
-                    showErrorMessage(ex.getMessage());
+                    showErrorMessage("Error saving route file.");
                 } catch (NullPointerException ex) {
-                    showErrorMessage(ex.getMessage());
                 }
             }
         });

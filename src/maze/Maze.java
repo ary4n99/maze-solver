@@ -98,44 +98,38 @@ public class Maze implements java.io.Serializable {
      * @return Maze
      * @throws IOException
      * @throws NullPointerException
-     * @throws InvalidMazeException
      */
-    public static Maze fromTxt(String filePath) throws IOException, NullPointerException, InvalidMazeException {
+    public static Maze fromTxt(String filePath) throws IOException, NullPointerException {
         Maze maze = new Maze();
-        try (FileReader file = new FileReader(filePath)) {
-            int fileInt = file.read();
-            maze.tiles.add(new ArrayList<Tile>());
-            while (fileInt != -1) {
-                char fileChar = (char) fileInt;
-                if (fileChar == '\n') {
-                    maze.tiles.add(new ArrayList<Tile>());
-                } else if (fileChar == 'e' || fileChar == 'x' || fileChar == '#' || fileChar == '.') {
-                    Tile newTile = Tile.fromChar(fileChar);
-                    maze.tiles.get(maze.tiles.size() - 1).add(newTile);
-                    if (fileChar == 'e') {
-                        try {
-                            maze.setEntrance(newTile);
-                        } catch (MultipleEntranceException e) {
-                            throw new MultipleEntranceException("Multiple entrances in the maze.");
-                        }
-                    } else if (fileChar == 'x') {
-                        try {
-                            maze.setExit(newTile);
-                        } catch (MultipleExitException e) {
-                            throw new MultipleExitException("Multiple exits in the maze.");
-                        }
+        FileReader file = new FileReader(filePath);
+        int fileInt = file.read();
+        maze.tiles.add(new ArrayList<Tile>());
+        while (fileInt != -1) {
+            char fileChar = (char) fileInt;
+            if (fileChar == '\n') {
+                maze.tiles.add(new ArrayList<Tile>());
+            } else if (fileChar == 'e' || fileChar == 'x' || fileChar == '#' || fileChar == '.') {
+                Tile newTile = Tile.fromChar(fileChar);
+                maze.tiles.get(maze.tiles.size() - 1).add(newTile);
+                if (fileChar == 'e') {
+                    try {
+                        maze.setEntrance(newTile);
+                    } catch (MultipleEntranceException e) {
+                        throw new MultipleEntranceException("Multiple entrances in the maze.");
                     }
-                } else {
-                    throw new InvalidMazeException("Invalid character in the maze.");
+                } else if (fileChar == 'x') {
+                    try {
+                        maze.setExit(newTile);
+                    } catch (MultipleExitException e) {
+                        throw new MultipleExitException("Multiple exits in the maze.");
+                    }
                 }
-                fileInt = file.read();
+            } else {
+                throw new InvalidMazeException("Invalid character in the maze.");
             }
-            file.close();
-        } catch (IOException e) {
-            throw new IOException("Error reading maze file.");
-        } catch (NullPointerException e) {
-            throw new NullPointerException("Error reading maze file.");
+            fileInt = file.read();
         }
+        file.close();
 
         int rowSize = maze.tiles.get(0).size();
         for (List<Tile> row : maze.tiles) {
@@ -229,10 +223,8 @@ public class Maze implements java.io.Serializable {
      * Setter method for the tile entrance.
      *
      * @param tileIn
-     * @throws IllegalArgumentException
-     * @throws InvalidMazeException
      */
-    private void setEntrance(Tile tileIn) throws IllegalArgumentException, InvalidMazeException {
+    private void setEntrance(Tile tileIn) {
         if (getTileLocation(tileIn) == null) {
             throw new IllegalArgumentException("Invalid entrance in the maze.");
         } else if (entrance == null) {
@@ -246,10 +238,8 @@ public class Maze implements java.io.Serializable {
      * Setter method for the tile exit.
      *
      * @param tileIn
-     * @throws IllegalArgumentException
-     * @throws InvalidMazeException
      */
-    private void setExit(Tile tileIn) throws IllegalArgumentException, InvalidMazeException {
+    private void setExit(Tile tileIn) {
         if (getTileLocation(tileIn) == null) {
             throw new IllegalArgumentException("Invalid exit in the maze.");
         } else if (exit == null) {
