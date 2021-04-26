@@ -6,8 +6,20 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
+/**
+ * The MazeRender class, the helper class for MazeApplication.
+ *
+ * @author Aryan Agrawal
+ * @version 0.1
+ */
 public class MazeRender {
 
+    /**
+     * Renders the maze using JavaFX.
+     *
+     * @param mazeString
+     * @return GridPane
+     */
     public static GridPane Render(String mazeString) {
         GridPane mazeGrid = new GridPane();
         int x = 0;
