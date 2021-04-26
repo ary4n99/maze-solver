@@ -9,7 +9,7 @@ package maze;
 public class Tile implements java.io.Serializable {
 
     /**
-     * An enumeration for each of the four tile types.
+     * Each of the four tile types.
      */
     public enum Type {
         CORRIDOR, ENTRANCE, EXIT, WALL;

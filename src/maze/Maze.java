@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The Maze class, which handles the main functionality of the maze.
+ * Handles the main functionality of the maze.
  *
  * @author Aryan Agrawal
  * @version 0.1
@@ -14,7 +14,7 @@ import java.util.List;
 public class Maze implements java.io.Serializable {
 
     /**
-     * An enumeration for the four directions.
+     * The four directions.
      */
     public enum Direction {
         NORTH, SOUTH, EAST, WEST;
@@ -213,7 +213,7 @@ public class Maze implements java.io.Serializable {
     /**
      * Getter method for the 2D tile maze array.
      *
-     * @return List<List<Tile>>
+     * @return 2D tile array
      */
     public List<List<Tile>> getTiles() {
         return tiles;
