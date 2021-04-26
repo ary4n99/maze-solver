@@ -5,44 +5,101 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The Maze class, which handles the main functionality of the maze.
+ *
+ * @author Aryan Agrawal
+ * @version 0.1
+ */
 public class Maze implements java.io.Serializable {
 
+    /**
+     * An enumeration for the four directions.
+     */
     public enum Direction {
         NORTH, SOUTH, EAST, WEST;
     }
 
+    /**
+     * An inner class to store tile coordinates.
+     */
     public class Coordinate {
 
+        /**
+         * The respective x & y locations for the tile.
+         */
         private int x, y;
 
+        /**
+         * The class constructor. Sets the input coordinates.
+         *
+         * @param xIn
+         * @param yIn
+         */
         public Coordinate(int xIn, int yIn) {
             x = xIn;
             y = yIn;
         }
 
+        /**
+         * Getter method for the x coordinate.
+         *
+         * @return int
+         */
         public int getX() {
             return x;
         }
 
+        /**
+         * Getter method for the y coordinate.
+         *
+         * @return int
+         */
         public int getY() {
             return y;
         }
 
+        /**
+         * Converts the coordinate to a string with proper formatting.
+         *
+         * @return String
+         */
         public String toString() {
             return "(" + x + ", " + y + ")";
         }
     }
 
+    /**
+     * Stores the entrance tile.
+     */
     private Tile entrance;
 
+    /**
+     * Stores the exit tile.
+     */
     private Tile exit;
 
+    /**
+     * A 2D array storing all of the maze tiles.
+     */
     private List<List<Tile>> tiles;
 
+    /**
+     * The class constructor. Instantiates the 2D tile array.
+     */
     private Maze() {
         tiles = new ArrayList<List<Tile>>();
     }
 
+    /**
+     * Reads the maze from an input .txt file.
+     *
+     * @param filePath
+     * @return Maze
+     * @throws IOException
+     * @throws NullPointerException
+     * @throws InvalidMazeException
+     */
     public static Maze fromTxt(String filePath) throws IOException, NullPointerException, InvalidMazeException {
         Maze maze = new Maze();
         try (FileReader file = new FileReader(filePath)) {
@@ -93,6 +150,13 @@ public class Maze implements java.io.Serializable {
         return maze;
     }
 
+    /**
+     * Gets the adjacent tile given a direction and base tile.
+     *
+     * @param tileIn
+     * @param direction
+     * @return Tile
+     */
     public Tile getAdjacentTile(Tile tileIn, Direction direction) {
         int oldTileX = getTileLocation(tileIn).getX();
         int oldTileY = getTileLocation(tileIn).getY();
@@ -107,18 +171,40 @@ public class Maze implements java.io.Serializable {
         }
     }
 
+    /**
+     * Getter method for the tile entrance.
+     *
+     * @return Tile
+     */
     public Tile getEntrance() {
         return entrance;
     }
 
+    /**
+     * Getter method for the tile exit.
+     *
+     * @return Tile
+     */
     public Tile getExit() {
         return exit;
     }
 
+    /**
+     * Getter method for a tile given the coordinates.
+     *
+     * @param coordinateIn
+     * @return Tile
+     */
     public Tile getTileAtLocation(Coordinate coordinateIn) {
         return tiles.get(tiles.size() - 1 - coordinateIn.getY()).get(coordinateIn.getX());
     }
 
+    /**
+     * Getter method for the coordinates of a tile given the tile.
+     *
+     * @param tileIn
+     * @return Coordinate
+     */
     public Coordinate getTileLocation(Tile tileIn) {
         for (int col = 0; col < tiles.size(); col++) {
             for (int row = 0; row < tiles.get(col).size(); row++) {
@@ -130,10 +216,22 @@ public class Maze implements java.io.Serializable {
         return null;
     }
 
+    /**
+     * Getter method for the 2D tile maze array.
+     *
+     * @return List<List<Tile>>
+     */
     public List<List<Tile>> getTiles() {
         return tiles;
     }
 
+    /**
+     * Setter method for the tile entrance.
+     *
+     * @param tileIn
+     * @throws IllegalArgumentException
+     * @throws InvalidMazeException
+     */
     private void setEntrance(Tile tileIn) throws IllegalArgumentException, InvalidMazeException {
         if (getTileLocation(tileIn) == null) {
             throw new IllegalArgumentException("Invalid entrance in the maze.");
@@ -144,6 +242,13 @@ public class Maze implements java.io.Serializable {
         }
     }
 
+    /**
+     * Setter method for the tile exit.
+     *
+     * @param tileIn
+     * @throws IllegalArgumentException
+     * @throws InvalidMazeException
+     */
     private void setExit(Tile tileIn) throws IllegalArgumentException, InvalidMazeException {
         if (getTileLocation(tileIn) == null) {
             throw new IllegalArgumentException("Invalid exit in the maze.");
@@ -154,6 +259,11 @@ public class Maze implements java.io.Serializable {
         }
     }
 
+    /**
+     * A method to convert the maze to a string.
+     *
+     * @return String
+     */
     public String toString() {
         String string = "";
         for (List<Tile> row : tiles) {
