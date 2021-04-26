@@ -19,16 +19,44 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.layout.GridPane;
 
+/**
+ * The main JavaFX class that renders the maze.
+ *
+ * @author Aryan Agrawal
+ * @version 0.1
+ */
 public class MazeApplication extends Application {
 
+    /**
+     * Stores the maze being solved.
+     */
     public Maze maze;
+
+    /**
+     * Stores the RouteFinder being used.
+     */
     public RouteFinder routeFinder;
+
+    /**
+     * Stores general padding values for rendering the program.
+     */
     public Insets insets = new Insets(20, 20, 20, 20);
 
+    /**
+     * The main method for launching the JavaFX program.
+     *
+     * @param args
+     */
     public static void main(String[] args) {
         launch(args);
     }
 
+    /**
+     * The method that renders the program using JavaFX and sets the button
+     * functions.
+     *
+     * @param stage
+     */
     public void start(Stage stage) {
         Button loadMapButton = new Button();
         loadMapButton.setText("Load map");
@@ -124,6 +152,11 @@ public class MazeApplication extends Application {
         stage.show();
     }
 
+    /**
+     * A helper method to launch error popups.
+     *
+     * @param errorMessage
+     */
     public void showErrorMessage(String errorMessage) {
         Alert alert = new Alert(AlertType.ERROR);
         alert.setTitle("Error");
@@ -134,6 +167,21 @@ public class MazeApplication extends Application {
         alert.showAndWait();
     }
 
+    /**
+     * The method that updates the program after calling the MazeRender.Render
+     * method.
+     *
+     * @param stage
+     * @param root
+     * @param leftVBox
+     * @param middleVBox
+     * @param rightVBox
+     * @param loadMapButton
+     * @param loadRouteButton
+     * @param saveRouteButton
+     * @param stepButton
+     * @param finished
+     */
     public void renderScreen(Stage stage, HBox root, VBox leftVBox, VBox middleVBox, VBox rightVBox,
             Button loadMapButton, Button loadRouteButton, Button saveRouteButton, Button stepButton, boolean finished) {
         GridPane mazeGrid = MazeRender.Render(routeFinder.toString());
