@@ -1,6 +1,6 @@
 import maze.*;
 import maze.routing.*;
-import maze.visualization.*;
+import maze.visualisation.*;
 import java.io.File;
 import java.io.IOException;
 import javafx.application.Application;
@@ -84,21 +84,17 @@ public class MazeApplication extends Application {
         middleVBox.getChildren().add(welcomeText);
         VBox rightVBox = new VBox();
         rightVBox.setAlignment(Pos.CENTER);
-        FileChooser fileChooserMaze = new FileChooser();
-        fileChooserMaze.getExtensionFilters().add(new FileChooser.ExtensionFilter("Text file", "*.txt"));
-        FileChooser fileChooserRoute = new FileChooser();
-        fileChooserRoute.getExtensionFilters().add(new FileChooser.ExtensionFilter("Route file", "*.route"));
+        FileChooser fileChooser = new FileChooser();
         HBox root = new HBox();
         root.getChildren().addAll(middleVBox, leftVBox);
         loadMapButton.setOnAction(e -> {
-            File file = fileChooserMaze.showOpenDialog(stage);
             try {
-                maze = Maze.fromTxt(file.getPath());
+                maze = Maze.fromTxt(fileChooser.showOpenDialog(stage).getPath());
                 routeFinder = new RouteFinder(maze);
                 renderScreen(stage, root, leftVBox, middleVBox, rightVBox, loadMapButton, loadRouteButton,
                         saveRouteButton, stepButton, false);
             } catch (IOException ex) {
-                showErrorMessage(ex.getMessage());
+                showErrorMessage("Error loading maze file.");
             } catch (InvalidMazeException ex) {
                 showErrorMessage(ex.getMessage());
             } catch (NullPointerException ex) {
@@ -107,35 +103,32 @@ public class MazeApplication extends Application {
         });
         loadRouteButton.setOnAction(e -> {
             try {
-                routeFinder = RouteFinder.load(fileChooserRoute.showOpenDialog(stage).getPath());
+                routeFinder = RouteFinder.load(fileChooser.showOpenDialog(stage).getPath());
                 maze = routeFinder.getMaze();
                 renderScreen(stage, root, leftVBox, middleVBox, rightVBox, loadMapButton, loadRouteButton,
                         saveRouteButton, stepButton, routeFinder.isFinished());
             } catch (IOException ex) {
                 showErrorMessage("Error loading route file.");
-            } catch (ClassNotFoundException ex) {
-                showErrorMessage(ex.getMessage());
-            } catch (NoRouteFoundException ex) {
+            } catch (ClassNotFoundException | NoRouteFoundException ex) {
                 showErrorMessage(ex.getMessage());
             } catch (NullPointerException ex) {
             }
 
         });
         saveRouteButton.setOnAction(e -> {
-            FileChooser fileSave = new FileChooser();
-            fileSave.setTitle("Save route");
-            File file = fileSave.showSaveDialog(stage);
-            if (file != null) {
-                if (!file.getName().endsWith(".route")) { // make case insensitive
-                    file = new File(file.getPath() + ".route");
-                }
-                try {
+            try {
+                File file = fileChooser.showSaveDialog(stage);
+                if (file != null) {
+                    if (!file.getName().toLowerCase().endsWith(".route")) {
+                        file = new File(file.getPath() + ".route");
+                    }
                     routeFinder.save(file.getPath());
-                } catch (IOException ex) {
-                    showErrorMessage("Error saving route file.");
-                } catch (NullPointerException ex) {
                 }
+            } catch (IOException ex) {
+                showErrorMessage("Error saving route file.");
+            } catch (NullPointerException ex) {
             }
+
         });
         stepButton.setOnAction(e -> {
             try {

@@ -1,4 +1,4 @@
-package maze.visualization;
+package maze.visualisation;
 
 import java.util.Hashtable;
 
