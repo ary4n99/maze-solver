@@ -108,6 +108,7 @@ public class Maze implements java.io.Serializable {
             char fileChar = (char) fileInt;
             if (fileChar == '\n') {
                 maze.tiles.add(new ArrayList<Tile>());
+            } else if (fileChar == '\r') {
             } else if (fileChar == 'e' || fileChar == 'x' || fileChar == '#' || fileChar == '.') {
                 Tile newTile = Tile.fromChar(fileChar);
                 maze.tiles.get(maze.tiles.size() - 1).add(newTile);

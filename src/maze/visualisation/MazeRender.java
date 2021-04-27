@@ -38,7 +38,7 @@ public class MazeRender {
                 for (Character key : characterColours.keySet()) {
                     if (mazeString.charAt(i) == key) {
                         x += 1;
-                        Rectangle rectangle = new Rectangle(50, 50);
+                        Rectangle rectangle = new Rectangle(30, 30);
                         rectangle.setFill(characterColours.get(key));
                         mazeGrid.add(rectangle, x, y);
                         break;

@@ -43,6 +43,51 @@ public class MazeApplication extends Application {
     public Insets insets = new Insets(20, 20, 20, 20);
 
     /**
+     * Stores the load map button.
+     */
+    public Button loadMapButton = new Button("Load map");
+
+    /**
+     * Stores the load route button.
+     */
+    public Button loadRouteButton = new Button("Load route");
+
+    /**
+     * Stores the save route button.
+     */
+    public Button saveRouteButton = new Button("Save route");
+
+    /**
+     * Stores the step button.
+     */
+    public Button stepButton = new Button("Next step");
+
+    /**
+     * Stores the solve button.
+     */
+    public Button solveButton = new Button("Solve maze");
+
+    /**
+     * Stores left VBox.
+     */
+    public VBox leftVBox = new VBox();
+
+    /**
+     * Stores middle VBox.
+     */
+    public VBox middleVBox = new VBox();
+
+    /**
+     * Stores right VBox.
+     */
+    public VBox rightVBox = new VBox();
+
+    /**
+     * Stores the root HBox.
+     */
+    public HBox root = new HBox();
+
+    /**
      * The main method for launching the JavaFX program.
      *
      * @param args
@@ -58,41 +103,28 @@ public class MazeApplication extends Application {
      * @param stage
      */
     public void start(Stage stage) {
-        Button loadMapButton = new Button();
-        loadMapButton.setText("Load map");
+        FileChooser fileChooser = new FileChooser();
         loadMapButton.setPrefSize(100, 50);
-        Button loadRouteButton = new Button();
-        loadRouteButton.setText("Load route");
         loadRouteButton.setPrefSize(100, 50);
-        Button saveRouteButton = new Button();
-        saveRouteButton.setText("Save route");
         saveRouteButton.setPrefSize(100, 50);
-        Button stepButton = new Button();
-        stepButton.setText("Next step");
         stepButton.setPrefSize(100, 50);
-        Text welcomeText = new Text();
-        welcomeText.setFont(new Font(20));
-        welcomeText.setText("Welcome to the Maze Solver!");
-        VBox leftVBox = new VBox();
+        solveButton.setPrefSize(100, 50);
         leftVBox.setAlignment(Pos.CENTER);
         leftVBox.setPadding(insets);
         leftVBox.setSpacing(20);
-        leftVBox.getChildren().addAll(loadMapButton, loadRouteButton);
-        VBox middleVBox = new VBox();
         middleVBox.setAlignment(Pos.CENTER);
-        middleVBox.setPadding(new Insets(20, 0, 20, 20));
-        middleVBox.getChildren().add(welcomeText);
-        VBox rightVBox = new VBox();
+        middleVBox.setPadding(insets);
+        middleVBox.setSpacing(20);
+        middleVBox.getChildren().addAll(loadMapButton, loadRouteButton);
         rightVBox.setAlignment(Pos.CENTER);
-        FileChooser fileChooser = new FileChooser();
-        HBox root = new HBox();
-        root.getChildren().addAll(middleVBox, leftVBox);
+        rightVBox.setPadding(insets);
+        rightVBox.setSpacing(20);
+        root.getChildren().addAll(middleVBox);
         loadMapButton.setOnAction(e -> {
             try {
                 maze = Maze.fromTxt(fileChooser.showOpenDialog(stage).getPath());
                 routeFinder = new RouteFinder(maze);
-                renderScreen(stage, root, leftVBox, middleVBox, rightVBox, loadMapButton, loadRouteButton,
-                        saveRouteButton, stepButton, false);
+                renderScreen(stage, false);
             } catch (IOException ex) {
                 showErrorMessage("Error loading maze file.");
             } catch (InvalidMazeException ex) {
@@ -105,8 +137,7 @@ public class MazeApplication extends Application {
             try {
                 routeFinder = RouteFinder.load(fileChooser.showOpenDialog(stage).getPath());
                 maze = routeFinder.getMaze();
-                renderScreen(stage, root, leftVBox, middleVBox, rightVBox, loadMapButton, loadRouteButton,
-                        saveRouteButton, stepButton, routeFinder.isFinished());
+                renderScreen(stage, routeFinder.isFinished());
             } catch (IOException ex) {
                 showErrorMessage("Error loading route file.");
             } catch (ClassNotFoundException | NoRouteFoundException ex) {
@@ -132,15 +163,23 @@ public class MazeApplication extends Application {
         });
         stepButton.setOnAction(e -> {
             try {
-                renderScreen(stage, root, leftVBox, middleVBox, rightVBox, loadMapButton, loadRouteButton,
-                        saveRouteButton, stepButton, routeFinder.step());
+                renderScreen(stage, routeFinder.step());
+            } catch (NoRouteFoundException ex) {
+                showErrorMessage(ex.getMessage());
+            }
+        });
+        solveButton.setOnAction(e -> {
+            try {
+                while (!routeFinder.step()) {
+                    renderScreen(stage, routeFinder.step());
+                }
+                renderScreen(stage, routeFinder.step());
             } catch (NoRouteFoundException ex) {
                 showErrorMessage(ex.getMessage());
             }
         });
         stage.setScene(new Scene(root));
         stage.sizeToScene();
-        stage.setTitle("Maze Solver - Aryan Agrawal");
         stage.show();
     }
 
@@ -164,39 +203,21 @@ public class MazeApplication extends Application {
      * method.
      *
      * @param stage
-     * @param root
-     * @param leftVBox
-     * @param middleVBox
-     * @param rightVBox
-     * @param loadMapButton
-     * @param loadRouteButton
-     * @param saveRouteButton
-     * @param stepButton
      * @param finished
      */
-    public void renderScreen(Stage stage, HBox root, VBox leftVBox, VBox middleVBox, VBox rightVBox,
-            Button loadMapButton, Button loadRouteButton, Button saveRouteButton, Button stepButton, boolean finished) {
+    public void renderScreen(Stage stage, boolean finished) {
         GridPane mazeGrid = MazeRender.Render(routeFinder.toString());
+        stage.setTitle("Maze Solver - Aryan Agrawal");
         leftVBox.getChildren().clear();
         leftVBox.getChildren().addAll(loadMapButton, loadRouteButton, saveRouteButton);
-        leftVBox.setPadding(insets);
         middleVBox.getChildren().clear();
         middleVBox.getChildren().add(mazeGrid);
-        middleVBox.setPadding(new Insets(50, 20, 50, 20));
         rightVBox.getChildren().clear();
         if (!finished) {
-            rightVBox.getChildren().add(stepButton);
-            rightVBox.setPadding(insets);
+            rightVBox.getChildren().addAll(stepButton, solveButton);
         }
         root.getChildren().clear();
         root.getChildren().addAll(leftVBox, middleVBox, rightVBox);
         stage.sizeToScene();
-        if (finished) {
-            Alert alert = new Alert(AlertType.INFORMATION);
-            alert.setTitle("Message");
-            alert.setHeaderText("The maze has been solved!");
-            alert.setContentText("Click the button below to return to the maze solver.");
-            alert.showAndWait();
-        }
     }
 }
